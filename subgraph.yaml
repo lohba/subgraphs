@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.2
 schema:
   file: ./schema.graphql
 dataSources:
@@ -13,10 +13,34 @@ dataSources:
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - GeyserCreated
+        - Vault
       abis:
         - name: GeyserFactoryV1
           file: ./abis/GeyserFactoryV1.json
+        - name: GeyserV1
+          file: ./abis/GeyserV1.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC721
+          file: ./abis/ERC721.json
+        - name: UniswapFactory
+          file: ./abis/thirdparty/uniswap/Factory.json
+        - name: UniswapPair
+          file: ./abis/thirdparty/uniswap/Pair.json
+        - name: UniswapFactoryV3
+          file: ./abis/thirdparty/uniswap/FactoryV3.json
+        - name: UniswapPoolV3
+          file: ./abis/thirdparty/uniswap/PoolV3.json
+        - name: BalancerVault
+          file: ./abis/thirdparty/balancer/Vault.json
+        - name: BalancerWeightedPool
+          file: ./abis/thirdparty/balancer/WeightedPool.json
+        - name: UMASyntheticToken
+          file: ./abis/thirdparty/uma/SyntheticToken.json
+        - name: UMALongShortPair
+          file: ./abis/thirdparty/uma/LongShortPair.json
+        - name: GUniPool
+          file: ./abis/thirdparty/gelato/GUniPool.json
       eventHandlers:
         - event: GeyserCreated(indexed address,address)
           handler: handleGeyserCreated
