@@ -5,12 +5,11 @@ import { ControlTransferred, OwnershipTransferred } from '../../generated/PoolFa
 import { Vault, Account, Protocol, UsageMetricsDailySnapshot } from '../../generated/schema'
 import { createNewPlatform, getOrCreateAccount } from '../common/initializer'
 import { ZERO_ADDRESS, INT_ONE, SECONDS_PER_DAY, SECONDS_PER_HOUR, UsageType  } from '../common/constants'
-import {updateUsageMetrics} from '../common/metrics'
 import { getLiquidityPool, getOrCreateDex, getOrCreateFinancialsDailySnapshot, getOrCreateLiquidityPoolDailySnapshot, getOrCreateLiquidityPoolHourlySnapshot, getOrCreateUsageMetricDailySnapshot, getOrCreateUsageMetricHourlySnapshot } from "./getters";
 
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-
+  let newOwner = Account.load(event.params.newOwner.toHexString());
 }
 
 export function handleControlTransferred(event: ControlTransferred): void {

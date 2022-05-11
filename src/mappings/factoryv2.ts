@@ -5,8 +5,8 @@ import { GeyserCreated } from '../../generated/GeyserFactoryV1/GeyserFactoryV1'
 import { GeyserV1 as GeyserContractV1 } from '../../generated/GeyserFactoryV1/GeyserV1'
 import { Vault, Platform, Token, User } from '../../generated/schema'
 import { GeyserV1 as GeyserTemplateV1 } from '../../generated/templates'
-import { integerToDecimal, createNewUser, createNewPlatform } from '../util/common'
-import { ZERO_BIG_INT, ZERO_BIG_DECIMAL, INITIAL_SHARES_PER_TOKEN, ZERO_ADDRESS } from '../util/constants'
+import { integerToDecimal, createNewUser, createNewPlatform } from '../common/initializer'
+import { ZERO_BIG_INT, ZERO_BIG_DECIMAL, INITIAL_SHARES_PER_TOKEN, ZERO_ADDRESS } from '../common/constants'
 import { createNewToken } from '../pricing/token'
 
 
