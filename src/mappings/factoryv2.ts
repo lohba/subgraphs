@@ -6,9 +6,11 @@ import { GeyserV1 as GeyserContractV1 } from '../../generated/GeyserFactoryV1/Ge
 import { Vault, Platform, Token, User } from '../../generated/schema'
 import { GeyserV1 as GeyserTemplateV1 } from '../../generated/templates'
 import { integerToDecimal, createNewUser, createNewPlatform } from '../common/initializer'
-import { ZERO_BIG_INT, ZERO_BIG_DECIMAL, INITIAL_SHARES_PER_TOKEN, ZERO_ADDRESS } from '../common/constants'
-import { createNewToken } from '../pricing/token'
 
+import { ZERO_BIG_INT, ZERO_BIG_DECIMAL, INITIAL_SHARES_PER_TOKEN, ZERO_ADDRESS } from '../common/constants'
+import { getOrCreateToken, getOrCreateReward } from '../common/token'
+import {getOrCreateProtocol} from '../common/protocol'
+import {getOrCreateAccount} from '../common/initializer';
 
 export function handleGeyserV1Created(event: GeyserCreated): void {
 
@@ -16,34 +18,16 @@ export function handleGeyserV1Created(event: GeyserCreated): void {
   let contract = GeyserContractV1.bind(event.params.geyser);
 
   // staking token
-  let stakingToken = Token.load(contract.stakingToken().toHexString())
-
-  if (stakingToken === null) {
-    stakingToken = createNewToken(contract.stakingToken());
-    stakingToken.save();
-  }
+  let stakingToken = getOrCreateToken(contract.stakingToken());
 
   // reward token
-  let rewardToken = Token.load(contract.rewardToken().toHexString())
-
-  if (rewardToken === null) {
-    rewardToken = createNewToken(contract.rewardToken());
-    rewardToken.save();
-  }
+  let rewardToken = getOrCreateReward(contract.rewardToken())
 
   // platform
-  let platform = Platform.load(ZERO_ADDRESS);
+  let platform = getOrCreateProtocol();
 
-  if (platform === null) {
-    platform = createNewPlatform();
-  }
 
-  let user = User.load(event.params.user.toHexString());
-
-  if (user == null) {
-    user = createNewUser(event.params.user);
-    platform.users = platform.users.plus(BigInt.fromI32(1));
-  }
+  let user = getOrCreateAccount(event.params.user.toHexString());
 
   // pool entity
   let pool = new Vault(event.params.geyser.toHexString());
