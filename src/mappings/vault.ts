@@ -10,6 +10,12 @@ import { getLiquidityPool, getOrCreateDex, getOrCreateFinancialsDailySnapshot, g
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
   let newOwner = Account.load(event.params.newOwner.toHexString());
+  if (newOwner == null) {
+    newOwner = getOrCreateAccount(event.params.newOwner.toHexString());
+    let usageMetricsDaily = getOrCreateUsageMetricDailySnapshot(event);
+    usageMetricsDaily.dailyActiveUsers =  usageMetricsDaily.dailyActiveUsers += INT_ONE;
+    newOwner.save()
+  }
 }
 
 export function handleControlTransferred(event: ControlTransferred): void {
@@ -24,7 +30,8 @@ export function handleControlTransferred(event: ControlTransferred): void {
     newOwner.save()
   }
 
-  pool.owner = newOwner.id;
+  handleOwnershipTransferred(event.params.previousController, event.params.newController)
+  //pool.owner = newOwner.id;
 
   pool.save();
   platform.save();
