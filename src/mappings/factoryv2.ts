@@ -3,11 +3,11 @@
 import { Address, BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { GeyserCreated } from '../../generated/GeyserFactoryV1/GeyserFactoryV1'
 import { GeyserV1 as GeyserContractV1 } from '../../generated/GeyserFactoryV1/GeyserV1'
-import { Vault, Platform, Token, User } from '../../generated/schema'
-import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
 import { GeyserV1 as GeyserTemplateV1 } from '../../generated/templates'
+import { Vault, Token } from '../../generated/schema'
+import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
 import { YieldAggregator, Vault as VaultStore } from "../../generated/schema";
-import { BIGINT_ZERO, BIGDECIMAL_ZERO, INITIAL_SHARES_PER_TOKEN, ZERO_ADDRESS, PROTOCOL_ID } from '../common/constants'
+import { BIGINT_ZERO, BIGDECIMAL_ZERO, ZERO_ADDRESS, PROTOCOL_ID, INT_ONE } from '../common/constants'
 import { getOrCreateToken, getOrCreateReward } from '../common/token'
 import {getOrCreateProtocol} from '../common/protocol'
 import {getOrCreateAccount} from '../common/initializer';
@@ -50,11 +50,7 @@ export function handleGeyserV1Created(event: GeyserCreated): void {
   vault.fees = [];
   vault.save();
 
-  // create template event handler
-  GeyserTemplateV1.create(event.params.geyser);  //return vault;
-
-
-  //platform.vaults = platform.vaults.plus(BigInt.fromI32(1));
+  protocol.vaults.push(vault.id);
 
   vault.save();
   user.save();

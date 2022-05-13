@@ -1,9 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { BIGDECIMAL_ZERO, BIGINT_ZERO, PROTOCOL_ID } from "./constants";
-import { createRewardTokens, getOrCreateToken } from "./tokens";
-import { Vault as VaultContract } from "../../generated/Manager/Vault";
+import { getOrCreateReward, getOrCreateToken } from "./token";
+import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
 import { YieldAggregator, Vault as VaultStore } from "../../generated/schema";
-import { Vault as VaultTemplate } from "../../generated/templates";
+import { Vault as VaultTemplate } from "../../generated/schema";
 
 
 export function createVault(vaultAddress: Address, timestamp: BigInt, blocknumber: BigInt): VaultStore {
@@ -25,7 +25,7 @@ export function createVault(vaultAddress: Address, timestamp: BigInt, blocknumbe
     vault.createdTimestamp = timestamp;
   
     
-    const rewardToken = createRewardTokens();
+    const rewardToken = getOrCreateReward(Address.fromString(vault.id));
   
     vault.rewardTokens = [rewardToken.id];
   

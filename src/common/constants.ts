@@ -14,6 +14,9 @@ export const PROTOCOL_METHODOLOGY_VERSION = "1.0.0";
 ///// Schema Enums /////
 ////////////////////////
 
+// GYSR Factory contract
+export const PROTOCOL_ID = "0xCAda3423d33259A94C1ED1A7AEEcb73B87D0B684";
+
 // The network names corresponding to the Network enum in the schema.
 // They also correspond to the ones in `dataSource.network()` after converting to lower case.
 // See below for a complete list:
