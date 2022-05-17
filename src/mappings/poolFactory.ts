@@ -1,6 +1,6 @@
 // V2 Pool Factory event handling and mapping
 
-import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { PoolCreated } from '../../generated/PoolFactory/PoolFactory'
 import { Pool as PoolContract } from '../../generated/PoolFactory/Pool'
 import { ERC20StakingModule as ERC20StakingModuleContract } from '../../generated/PoolFactory/ERC20StakingModule'
@@ -8,6 +8,10 @@ import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../../ge
 import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../../generated/PoolFactory/ERC20CompetitiveRewardModule'
 import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../../generated/PoolFactory/ERC20FriendlyRewardModule'
 import { Vault, YieldAggregator, Token, Account } from '../../generated/schema'
+import { Vault as VaultStore } from '../../generated/schema'
+import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
+
+
 import {
   Pool as PoolTemplate,
   ERC20BaseRewardModule as ERC20BaseRewardModuleTemplate,
@@ -15,16 +19,17 @@ import {
 } from '../../generated/templates'
 import { integerToDecimal, createNewUser, createNewPlatform } from '../util/common'
 import {
-  ZERO_BIG_INT,
-  ZERO_BIG_DECIMAL,
+  BIGINT_ZERO,
+  BIGDECIMAL_ZERO,
   INITIAL_SHARES_PER_TOKEN,
   ZERO_ADDRESS,
+  PROTOCOL_ID,
   ERC20_COMPETITIVE_REWARD_MODULE_FACTORIES,
   ERC20_FRIENDLY_REWARD_MODULE_FACTORIES,
   ERC20_STAKING_MODULE_FACTORIES,
   ERC721_STAKING_MODULE_FACTORIES,
   ONE_E_18
-} from '../util/constants'
+} from '../common/constants'
 import { getOrCreateToken, getOrCreateReward } from '../common/token'
 import {getOrCreateProtocol} from '../common/protocol'
 import {getOrCreateAccount} from '../common/initializer';
@@ -54,7 +59,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   let user = getOrCreateAccount(event.params.user.toHexString());
 
   // pool entity
-  const vault = new VaultStore(event.params.geyser.toHexString());
+  const vault = new VaultStore(event.params.pool.toHexString());
   const vaultContract = VaultContract.bind(Address.fromString(vault.id));
   vault.protocol = PROTOCOL_ID
 
@@ -84,16 +89,17 @@ export function handlePoolCreated(event: PoolCreated): void {
   let rewardFactory = rewardModuleContract.factory();
   if (ERC20_COMPETITIVE_REWARD_MODULE_FACTORIES.includes(rewardFactory)) {
     let competitiveContract = ERC20CompetitiveRewardModuleContract.bind(rewardModule)
-    pool.timeMultMin = integerToDecimal(competitiveContract.bonusMin());
-    pool.timeMultMax = integerToDecimal(competitiveContract.bonusMax());
-    pool.timeMultPeriod = competitiveContract.bonusPeriod();
-    pool.rewardModuleType = 'ERC20Competitive';
+    // pool.timeMultMin = integerToDecimal(competitiveContract.bonusMin());
+    // pool.timeMultMax = integerToDecimal(competitiveContract.bonusMax());
+    // pool.timeMultPeriod = competitiveContract.bonusPeriod();
+    
+    vault.rewardModuleType = 'ERC20Competitive';
   } else if (ERC20_FRIENDLY_REWARD_MODULE_FACTORIES.includes(rewardFactory)) {
     let friendlyContract = ERC20FriendlyRewardModuleContract.bind(rewardModule);
-    pool.timeMultMin = integerToDecimal(friendlyContract.vestingStart());
-    pool.timeMultMax = BigDecimal.fromString('1');
-    pool.timeMultPeriod = friendlyContract.vestingPeriod();
-    pool.rewardModuleType = 'ERC20Friendly';
+    // pool.timeMultMin = integerToDecimal(friendlyContract.vestingStart());
+    // pool.timeMultMax = BigDecimal.fromString('1');
+    // pool.timeMultPeriod = friendlyContract.vestingPeriod();
+    vault.rewardModuleType = 'ERC20Friendly';
   } else {
     log.info('unknown reward module type: {}', [rewardFactory.toHexString()]);
     return;
@@ -102,11 +108,11 @@ export function handlePoolCreated(event: PoolCreated): void {
   // staking type
   let stakingFactory = stakingModuleContract.factory();
   if (ERC20_STAKING_MODULE_FACTORIES.includes(stakingFactory)) {
-    pool.stakingModuleType = 'ERC20';
-    pool.stakingSharesPerToken = INITIAL_SHARES_PER_TOKEN;
+    vault.stakingModuleType = 'ERC20';
+    vault.stakingSharesPerToken = INITIAL_SHARES_PER_TOKEN;
   } else if (ERC721_STAKING_MODULE_FACTORIES.includes(stakingFactory)) {
-    pool.stakingModuleType = 'ERC721';
-    pool.stakingSharesPerToken = ONE_E_18;
+    vault.stakingModuleType = 'ERC721';
+    vault.stakingSharesPerToken = ONE_E_18;
   } else {
     log.info('unknown staking module type: {}', [stakingFactory.toHexString()]);
     return;
