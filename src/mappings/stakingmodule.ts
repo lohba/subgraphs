@@ -19,16 +19,17 @@ import { _Deposit } from '../modules/Deposit'
 
 export function handleStaked(event: Staked): void {
   // load pool and tokens
-  
   let contract = ERC20StakingModuleContract.bind(event.address);
   let vault = Vault.load(contract.owner().toHexString())!;
   let stakingToken = Token.load(vault.inputToken)!;
   let rewardToken = Token.load(vault.outputToken!)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;
 
+  // load platform
   if(platform == null) {
     platform = getOrCreateProtocol()
   }
+
   // load or create user
   let user = Account.load(event.params.user.toHexString());
 
@@ -133,100 +134,109 @@ export function handleUnstaked(event: Unstaked): void {
   let rewardToken = Token.load(vault.outputToken!)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;
 
+  // load platform
+  if(platform == null) {
+    platform = getOrCreateProtocol()
+  }
+
   // load user
   let user = Account.load(event.params.user.toHexString())!;
 
+  if (user === null) {
+    user = getOrCreateAccount(event.params.user.toHexString());
+    platform.cumulativeUniqueUsers = platform.cumulativeUniqueUsers += INT_ONE;  
+}
   // load position
   let positionId = pool.id + '_' + user.id;
   let position = Position.load(positionId)!;
-
+  _Deposit(Address.fromString(user.id), event.transaction, event.block, vault, event.params.amount)
   // get position data from contract
-  let count = 0;
-  let shares = BIGDECIMAL_ZERO;
-  let ts = BIGINT_ZERO;
-  let poolContract = PoolContract.bind(Address.fromString(pool.id));
-  if (pool.rewardModuleType == 'ERC20Competitive') {
-    // competitive
-    let rewardContract = ERC20CompetitiveRewardModuleContract.bind(poolContract.rewardModule());
-    count = rewardContract.stakeCount(event.params.user).toI32();
+//   let count = 0;
+//   let shares = BIGDECIMAL_ZERO;
+//   let ts = BIGINT_ZERO;
+//   let poolContract = PoolContract.bind(Address.fromString(pool.id));
+//   if (pool.rewardModuleType == 'ERC20Competitive') {
+//     // competitive
+//     let rewardContract = ERC20CompetitiveRewardModuleContract.bind(poolContract.rewardModule());
+//     count = rewardContract.stakeCount(event.params.user).toI32();
 
-    if (count > 0) {
-      // get info for updated last position
-      let s = rewardContract.stakes(event.params.user, BigInt.fromI32(count - 1));
-      shares = integerToDecimal(s.value0, stakingToken.decimals);
-      ts = s.value1;
-    }
+//     if (count > 0) {
+//       // get info for updated last position
+//       let s = rewardContract.stakes(event.params.user, BigInt.fromI32(count - 1));
+//       shares = integerToDecimal(s.value0, stakingToken.decimals);
+//       ts = s.value1;
+//     }
 
-  } else {
-    // friendly
-    let rewardContract = ERC20FriendlyRewardModuleContract.bind(poolContract.rewardModule());
-    count = rewardContract.stakeCount(event.params.user).toI32();
+//   } else {
+//     // friendly
+//     let rewardContract = ERC20FriendlyRewardModuleContract.bind(poolContract.rewardModule());
+//     count = rewardContract.stakeCount(event.params.user).toI32();
 
-    if (count > 0) {
-      // get info for updated last position
-      let s = rewardContract.stakes(event.params.user, BigInt.fromI32(count - 1));
-      shares = integerToDecimal(s.value0, stakingToken.decimals);
-      ts = s.value4;
-    }
-  }
+//     if (count > 0) {
+//       // get info for updated last position
+//       let s = rewardContract.stakes(event.params.user, BigInt.fromI32(count - 1));
+//       shares = integerToDecimal(s.value0, stakingToken.decimals);
+//       ts = s.value4;
+//     }
+//   }
 
   // format unstake amount
-  let unstakeAmount = integerToDecimal(event.params.amount, stakingToken.decimals);
+//   let unstakeAmount = integerToDecimal(event.params.amount, stakingToken.decimals);
 
-  // update or delete current stakes
-  // (for some reason this didn't work with a derived 'stakes' field)
-  let stakes = position.stakes;
+//   // update or delete current stakes
+//   // (for some reason this didn't work with a derived 'stakes' field)
+//   let stakes = position.stakes;
 
-  for (let i = stakes.length - 1; i >= 0; i--) {
-    if (i >= count) {
-      // delete any trailing stakes that we know have been removed
-      store.remove('Stake', stakes[i]);
-      stakes.pop();
-      continue;
-    }
-    // update remaining trailing stake
-    let stake = Stake.load(stakes[i])!;
+//   for (let i = stakes.length - 1; i >= 0; i--) {
+//     if (i >= count) {
+//       // delete any trailing stakes that we know have been removed
+//       store.remove('Stake', stakes[i]);
+//       stakes.pop();
+//       continue;
+//     }
+//     // update remaining trailing stake
+//     let stake = Stake.load(stakes[i])!;
 
-    // verify position timestamps
-    if (ts != stake.timestamp) {
-      log.error(
-        'Stake timestamps not equal: {} != {}',
-        [stake.timestamp.toString(), ts.toString()]
-      )
-    }
+//     // verify position timestamps
+//     if (ts != stake.timestamp) {
+//       log.error(
+//         'Stake timestamps not equal: {} != {}',
+//         [stake.timestamp.toString(), ts.toString()]
+//       )
+//     }
 
-    // set updated share amount
-    stake.shares = shares;
-    stake.save();
-    break;
-  }
+//     // set updated share amount
+//     stake.shares = shares;
+//     stake.save();
+//     break;
+//   }
 
-  // update position info
-  position.shares = position.shares.minus(
-    integerToDecimal(event.params.shares, stakingToken.decimals)
-  );
-  position.stakes = stakes;
-  if (position.shares.gt(BIGDECIMAL_ZERO)) {
-    position.save();
-  } else {
-    store.remove('Position', positionId);
-    pool.users = pool.users.minus(BigInt.fromI32(1));
-  }
+//   // update position info
+//   position.shares = position.shares.minus(
+//     integerToDecimal(event.params.shares, stakingToken.decimals)
+//   );
+//   position.stakes = stakes;
+//   if (position.shares.gt(BIGDECIMAL_ZERO)) {
+//     position.save();
+//   } else {
+//     store.remove('Position', positionId);
+//     pool.users = pool.users.minus(BigInt.fromI32(1));
+//   }
 
-  // update general info
-  user.operations = user.operations.plus(BigInt.fromI32(1));
-  pool.operations = pool.operations.plus(BigInt.fromI32(1));
-  platform.operations = platform.operations.plus(BigInt.fromI32(1));
+//   // update general info
+//   user.operations = user.operations.plus(BigInt.fromI32(1));
+//   pool.operations = pool.operations.plus(BigInt.fromI32(1));
+//   platform.operations = platform.operations.plus(BigInt.fromI32(1));
 
-  // create new unstake transaction
-  let transaction = new Transaction(event.transaction.hash.toHexString());
-  transaction.type = 'Unstake';
-  transaction.timestamp = event.block.timestamp;
-  transaction.pool = pool.id;
-  transaction.user = user.id;
-  transaction.amount = unstakeAmount;
-  transaction.earnings = BIGDECIMAL_ZERO;
-  transaction.gysrSpent = BIGDECIMAL_ZERO;
+//   // create new unstake transaction
+//   let transaction = new Transaction(event.transaction.hash.toHexString());
+//   transaction.type = 'Unstake';
+//   transaction.timestamp = event.block.timestamp;
+//   transaction.pool = pool.id;
+//   transaction.user = user.id;
+//   transaction.amount = unstakeAmount;
+//   transaction.earnings = BIGDECIMAL_ZERO;
+//   transaction.gysrSpent = BIGDECIMAL_ZERO;
 
   // update pool data
   updatePool(pool, platform, stakingToken, rewardToken, event.block.timestamp);
