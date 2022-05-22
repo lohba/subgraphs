@@ -8,7 +8,7 @@ import { Vault, Token } from '../../generated/schema'
 import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
 import { YieldAggregator, Vault as VaultStore } from "../../generated/schema";
 import { BIGINT_ZERO, BIGDECIMAL_ZERO, ZERO_ADDRESS, PROTOCOL_ID, INT_ONE } from '../common/constants'
-import { getOrCreateToken, getOrCreateReward } from '../common/token'
+import { getOrCreateToken, getOrCreateRewardToken } from '../common/getters'
 import {getOrCreateProtocol} from '../common/protocol'
 import {getOrCreateAccount} from '../common/initializer';
 
@@ -21,7 +21,7 @@ export function handleGeyserV1Created(event: GeyserCreated): void {
   let stakingToken = getOrCreateToken(contract.stakingToken());
 
   // reward token
-  let rewardToken = getOrCreateReward(contract.rewardToken())
+  let rewardToken = getOrCreateRewardToken(contract.rewardToken())
 
   // platform
   let protocol = getOrCreateProtocol();
@@ -34,7 +34,7 @@ export function handleGeyserV1Created(event: GeyserCreated): void {
   const vaultContract = VaultContract.bind(Address.fromString(vault.id));
   vault.protocol = PROTOCOL_ID
 
-  vault.name = stakingToken.name;
+  vault.name = stakingToken.name; 
   vault.symbol = stakingToken.symbol;
   const inputToken = stakingToken;
   vault.inputToken = inputToken.name;

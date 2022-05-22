@@ -60,3 +60,61 @@ export function updateVaultSnapshots(
     vaultDailySnapshots.save();
     vaultHourlySnapshots.save();
   }
+
+  export function updateUsageMetrics(block: ethereum.Block, from: Address): void {
+    getOrCreateAccount(from.toHexString());
+  
+    const protocol = getOrCreateYieldAggregator();
+    const usageMetricsDaily = getOrCreateUsageMetricsDailySnapshot(block);
+    const usageMetricsHourly = getOrCreateUsageMetricsHourlySnapshot(block);
+  
+    usageMetricsDaily.blockNumber = block.number;
+    usageMetricsHourly.blockNumber = block.number;
+  
+    usageMetricsDaily.timestamp = block.timestamp;
+    usageMetricsHourly.timestamp = block.timestamp;
+  
+    usageMetricsDaily.dailyTransactionCount += 1;
+    usageMetricsHourly.hourlyTransactionCount += 1;
+  
+    usageMetricsDaily.cumulativeUniqueUsers = protocol.cumulativeUniqueUsers;
+    usageMetricsHourly.cumulativeUniqueUsers = protocol.cumulativeUniqueUsers;
+  
+    let dailyActiveAccountId = (
+      block.timestamp.toI64() / constants.SECONDS_PER_DAY
+    )
+      .toString()
+      .concat("-")
+      .concat(from.toHexString());
+  
+    let dailyActiveAccount = ActiveAccount.load(dailyActiveAccountId);
+  
+    if (!dailyActiveAccount) {
+      dailyActiveAccount = new ActiveAccount(dailyActiveAccountId);
+      dailyActiveAccount.save();
+  
+      usageMetricsDaily.dailyActiveUsers += 1;
+      usageMetricsHourly.hourlyActiveUsers += 1;
+    }
+  
+    usageMetricsDaily.save();
+    usageMetricsHourly.save();
+  }
+  
+export function updateFinancials(block: ethereum.Block): void {
+    const financialMetrics = getOrCreateFinancialDailySnapshots(block);
+    const protocol = getOrCreateYieldAggregator();
+  
+    financialMetrics.totalValueLockedUSD = protocol.totalValueLockedUSD;
+    financialMetrics.cumulativeSupplySideRevenueUSD =
+      protocol.cumulativeSupplySideRevenueUSD;
+    financialMetrics.cumulativeProtocolSideRevenueUSD =
+      protocol.cumulativeProtocolSideRevenueUSD;
+    financialMetrics.cumulativeTotalRevenueUSD =
+      protocol.cumulativeTotalRevenueUSD;
+  
+    financialMetrics.blockNumber = block.number;
+    financialMetrics.timestamp = block.timestamp;
+  
+    financialMetrics.save();
+  }

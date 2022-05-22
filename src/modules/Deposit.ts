@@ -20,6 +20,7 @@ import {
   import { getPriceOfOutputTokens } from "./Price";
   import * as constants from "../common/constants";
   import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
+  import {BIGINT_ZERO} from '../common/constants';
   
   export function createDepositTransaction(
     to: Address,
@@ -58,23 +59,23 @@ import {
   
     return depositTransaction;
   }
+
   
   export function _Deposit(
     to: Address,
     transaction: ethereum.Transaction,
     block: ethereum.Block,
     vault: VaultStore,
-    depositAmount: BigInt
+    depositAmount: BigInt,
+    minted: BigInt
   ): void {
     const vaultAddress = Address.fromString(vault.id);
     const vaultContract = VaultContract.bind(vaultAddress);
     const protocol = getOrCreateYieldAggregator();
-  
+
     // calculate shares minted as per the deposit function in vault contract address
-    let sharesMinted = vault.outputTokenSupply!.isZero()
-      ? depositAmount
-      : depositAmount.times(vault.outputTokenSupply!).div(vault.inputTokenBalance);
-  
+    let sharesMinted = minted;
+    
     let inputToken = Token.load(vault.inputToken);
     let inputTokenAddress = Address.fromString(vault.inputToken);
     let inputTokenPrice = getUsdPricePerToken(inputTokenAddress);

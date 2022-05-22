@@ -1,11 +1,11 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, Address } from "@graphprotocol/graph-ts";
 
 ////////////////////
 ///// Versions /////
 ////////////////////
 
-export const PROTOCOL_NAME = "Uniswap v2";
-export const PROTOCOL_SLUG = "uniswap-v2";
+export const PROTOCOL_NAME = "GYSR";
+export const PROTOCOL_SLUG = "gysr";
 export const PROTOCOL_SCHEMA_VERSION = "1.2.1";
 export const PROTOCOL_SUBGRAPH_VERSION = "1.0.2";
 export const PROTOCOL_METHODOLOGY_VERSION = "1.0.0";
@@ -53,46 +53,18 @@ export namespace VaultFeeType {
   export const WITHDRAWAL_FEE = "WITHDRAWAL_FEE";
 }
 
-export namespace LiquidityPoolFeeType {
-  export const FIXED_TRADING_FEE = "FIXED_TRADING_FEE";
-  export const TIERED_TRADING_FEE = "TIERED_TRADING_FEE";
-  export const DYNAMIC_TRADING_FEE = "DYNAMIC_TRADING_FEE";
-  export const FIXED_LP_FEE = "FIXED_LP_FEE";
-  export const DYNAMIC_LP_FEE = "DYNAMIC_LP_FEE";
-  export const FIXED_PROTOCOL_FEE = "FIXED_PROTOCOL_FEE";
-  export const DYNAMIC_PROTOCOL_FEE = "DYNAMIC_PROTOCOL_FEE";
-}
-
 export namespace RewardTokenType {
   export const DEPOSIT = "DEPOSIT";
   export const BORROW = "BORROW";
 }
 
-export namespace LendingType {
-  export const CDP = "CDP";
-  export const POOLED = "POOLED";
-}
-
-export namespace RiskType {
-  export const GLOBAL = "GLOBAL";
-  export const ISOLATED = "ISOLATED";
-}
-
-export namespace InterestRateType {
-  export const STABLE = "STABLE";
-  export const VARIABLE = "VARIABLE";
-  export const FIXED_TERM = "FIXED_TERM";
-}
-
-export namespace InterestRateSide {
-  export const LENDER = "LENDER";
-  export const BORROWER = "BORROWER";
-}
-
-export namespace UsageType {
-  export const DEPOSIT = "DEPOSIT";
-  export const WITHDRAW = "WITHDRAW";
-  export const SWAP = "SWAP";
+export namespace Protocol {
+  export const NAME = "Stake DAO";
+  export const SLUG = "stake-dao";
+  export const SCHEMA_VERSION = "1.2.1";
+  export const SUBGRAPH_VERSION = "1.1.0";
+  export const NETWORK = Network.MAINNET;
+  export const TYPE = ProtocolType.YIELD;
 }
 
 //////////////////////////////
@@ -121,6 +93,7 @@ export const USDC_DENOMINATOR = BigDecimal.fromString("1000000");
 export const BIGINT_ZERO = BigInt.fromI32(0);
 export const BIGINT_ONE = BigInt.fromI32(1);
 export const BIGINT_TWO = BigInt.fromI32(2);
+export const BIGINT_TEN = BigInt.fromI32(10);
 export const BIGINT_HUNDRED = BigInt.fromI32(100);
 export const BIGINT_THOUSAND = BigInt.fromI32(1000);
 export const BIGINT_MAX = BigInt.fromString(
@@ -133,10 +106,11 @@ export const INT_ONE = 1 as i32;
 export const INT_TWO = 2 as i32;
 export const INT_FOUR = 4 as i32;
 
+export const DENOMINATOR = BigDecimal.fromString("10000");
 export const BIGDECIMAL_ZERO = new BigDecimal(BIGINT_ZERO);
 export const BIGDECIMAL_ONE = new BigDecimal(BIGINT_ONE);
 export const BIGDECIMAL_TWO = new BigDecimal(BIGINT_TWO);
-
+export const BIGDECIMAL_HUNDRED = BigDecimal.fromString("100");
 export const MAX_UINT = BigInt.fromI32(2).times(BigInt.fromI32(255));
 
 /////////////////////
@@ -160,9 +134,30 @@ export const ETH_NAME = "Ether"
 ///// Protocol Specific /////
 /////////////////////////////
 
-export const FACTORY_ADDRESS = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-export const TRADING_FEE = BigDecimal.fromString("3");
-export const PROTOCOL_FEE_TO_ON = BigDecimal.fromString("0.5");
-export const LP_FEE_TO_ON = BigDecimal.fromString("2.5");
-export const PROTOCOL_FEE_TO_OFF = BigDecimal.fromString("0.0");
-export const LP_FEE_TO_OFF = BigDecimal.fromString("3");
+// contract
+export let INITIAL_SHARES_PER_TOKEN = BigDecimal.fromString('1000000');
+
+// factories
+export let ERC20_COMPETITIVE_REWARD_MODULE_FACTORIES: Address[] = [
+  Address.fromString('0x4e06ae5fa48089a69d4ee4ffee9524b06c2b7400'),
+  Address.fromString('0x180b934da7b529a1a158cA2c1C6306c568787761')
+];
+export let ERC20_FRIENDLY_REWARD_MODULE_FACTORIES: Address[] = [
+  Address.fromString('0x101063f864e91b72a5ce06342afc7ea5d8515398'),
+  Address.fromString('0xAB403b87cfF1075392E23eB31c8f7AB20E39e71E')
+];
+export let ERC20_STAKING_MODULE_FACTORIES: Address[] = [
+  Address.fromString('0xaef2a7E4CbEB875475cFb1924867B9374569D894')
+];
+export let ERC721_STAKING_MODULE_FACTORIES: Address[] = [
+  Address.fromString('0xa13edbc1ea1751c338e2528f7defd082357e2d1e')
+];
+
+export let STABLECOINS: string[] = [
+  '{{usdc_address}}',
+  '{{usdt_address}}',
+  '{{dai_address}}',
+  '{{frax_address}}'
+];
+
+export let STABLECOIN_DECIMALS: number[] = [6, 6, 18, 18];

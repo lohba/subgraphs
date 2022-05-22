@@ -21,7 +21,6 @@ import {
   import * as constants from "../common/constants";
   import { getPriceOfOutputTokens } from "./Price";
   import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
-  import { Strategy as StrategyContract } from "../../generated/controller/Strategy";
   
   export function createWithdrawTransaction(
     to: Address,
@@ -79,7 +78,7 @@ import {
     // contract address
     let withdrawAmount = vault.inputTokenBalance
       .times(sharesBurnt)
-      .div(vault.outputTokenSupply);
+      .div(vault.outputTokenSupply!);
   
     let inputToken = Token.load(vault.inputToken);
     let inputTokenAddress = Address.fromString(vault.inputToken);
@@ -89,19 +88,18 @@ import {
     ).toBigDecimal();
   
     vault.inputTokenBalance = vault.inputTokenBalance.minus(withdrawAmount);
-    vault.outputTokenSupply = vault.outputTokenSupply.minus(sharesBurnt);
+    vault.outputTokenSupply = vault.outputTokenSupply!.minus(sharesBurnt);
   
-    const withdrawalFees = utils
-      .readValue<BigInt>(
-        strategyContract.try_withdrawalFee(),
-        constants.BIGINT_ZERO
-      )
-      .toBigDecimal()
-      .div(constants.DENOMINATOR);
+    // const withdrawalFees = utils
+    //   .readValue<BigInt>(
+    //     strategyContract.try_withdrawalFee(),
+    //     constants.BIGINT_ZERO
+    //   )
+    //   .toBigDecimal()
+    //   .div(constants.DENOMINATOR);
   
     const protocolSideWithdrawalAmount = withdrawAmount
       .toBigDecimal()
-      .times(withdrawalFees)
       .div(inputTokenDecimals);
   
     const supplySideWithdrawalAmount = withdrawAmount
@@ -126,12 +124,12 @@ import {
       inputTokenDecimals
     );
   
-    vault.pricePerShare = utils
-      .readValue<BigInt>(
-        vaultContract.try_getPricePerFullShare(),
-        constants.BIGINT_ZERO
-      )
-      .toBigDecimal();
+    // vault.pricePerShare = utils
+    //   .readValue<BigInt>(
+    //     vaultContract.try_getPricePerFullShare(),
+    //     constants.BIGINT_ZERO
+    //   )
+    //   .toBigDecimal();
   
     const protocolSideWithdrawalAmountUSD = protocolSideWithdrawalAmount
       .times(inputTokenPrice.usdPrice)

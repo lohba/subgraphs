@@ -6,15 +6,17 @@ import {
   Unstaked,
   Claimed
 } from '../../generated/templates/ERC20StakingModule/ERC20StakingModule'
-import { Pool as PoolContract, } from '../../generated/templates/ERC20StakingModule/Pool'
 import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../../generated/templates/ERC20StakingModule/ERC20CompetitiveRewardModule'
 import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../../generated/templates/ERC20StakingModule/ERC20FriendlyRewardModule'
-import { Vault, Token, RewardToken, Account, YieldAggregator, Deposit } from '../../generated/schema'
-import {  getOrCreateAccount, updatePoolDayData } from '../common/initializer'
+import { Vault, Token, RewardToken, Account, YieldAggregator, Deposit, Withdraw } from '../../generated/schema'
+import { getOrCreateAccount, updatePoolDayData } from '../common/initializer'
 import {getOrCreateProtocol} from '../common/protocol'
 import { BIGINT_ZERO,BIGDECIMAL_ZERO, ZERO_ADDRESS, INT_ONE } from '../common/constants'
 import { updatePool } from '../utils/pool'
 import { _Deposit } from '../modules/Deposit'
+import { _Withdraw } from '../modules/Withdraw'
+import { updateFinancials, updateUsageMetrics, updateVaultSnapshots } from "../modules/Metrics";
+
 
 
 export function handleStaked(event: Staked): void {
@@ -41,7 +43,11 @@ export function handleStaked(event: Staked): void {
    // load or create position
    let positionId = vault.id + '_' + user.id;
    let deposit = Deposit.load(vault.id);
-   _Deposit(Address.fromString(user.id), event.transaction, event.block, vault, event.params.amount)
+   // Deposit update
+   _Deposit(Address.fromString(user.id), event.transaction, event.block, vault, event.params.amount, event.params.shares)
+   updateFinancials(event.block);
+   updateUsageMetrics(event.block, Address.fromString(user.id));
+   updateVaultSnapshots(Address.fromString(vault.id), event.block);
 //    if (!deposit) {
 //     deposit = new Deposit(positionId);
 //     deposit.vault = vault.id;
@@ -147,9 +153,13 @@ export function handleUnstaked(event: Unstaked): void {
     platform.cumulativeUniqueUsers = platform.cumulativeUniqueUsers += INT_ONE;  
 }
   // load position
-  let positionId = pool.id + '_' + user.id;
-  let position = Position.load(positionId)!;
-  _Deposit(Address.fromString(user.id), event.transaction, event.block, vault, event.params.amount)
+  let positionId = vault.id + '_' + user.id;
+  let position = Withdraw.load(positionId)!;
+  // Withdraw update
+  _Withdraw(Address.fromString(user.id), event.transaction, event.block, vault, event.params.amount)
+  updateFinancials(event.block);
+  updateUsageMetrics(event.block, Address.fromString(user.id));
+  updateVaultSnapshots(Address.fromString(vault.id), event.block);
   // get position data from contract
 //   let count = 0;
 //   let shares = BIGDECIMAL_ZERO;
@@ -239,22 +249,22 @@ export function handleUnstaked(event: Unstaked): void {
 //   transaction.gysrSpent = BIGDECIMAL_ZERO;
 
   // update pool data
-  updatePool(pool, platform, stakingToken, rewardToken, event.block.timestamp);
-  let poolDayData = updatePoolDayData(pool, event.block.timestamp.toI32());
+//   updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
+   let poolDayData = updatePoolDayData(vault, event.block.timestamp.toI32());
 
-  // update platform pricing
-  if (pool.tvl.gt(PRICING_MIN_TVL) && !platform._activePools.includes(pool.id)) {
-    log.info('Adding pool to active pricing {}', [pool.id.toString()]);
-    platform._activePools = platform._activePools.concat([pool.id]);
-  }
-  updatePlatform(platform, event.block.timestamp, pool);
+//   // update platform pricing
+//   if (pool.tvl.gt(PRICING_MIN_TVL) && !platform._activePools.includes(pool.id)) {
+//     log.info('Adding pool to active pricing {}', [pool.id.toString()]);
+//     platform._activePools = platform._activePools.concat([pool.id]);
+//   }
+//   updatePlatform(platform, event.block.timestamp, pool);
 
   // store
   user.save();
-  pool.save();
+  vault.save();
   stakingToken.save();
-  rewardToken.save();
-  transaction.save();
+  //rewardToken.save();
+  //transaction.save();
   platform.save();
   poolDayData.save();
 }
@@ -263,25 +273,28 @@ export function handleUnstaked(event: Unstaked): void {
 export function handleClaimed(event: Claimed): void {
   // load pool and token
   let contract = ERC20StakingModuleContract.bind(event.address);
-  let pool = Pool.load(contract.owner().toHexString())!;
-  let stakingToken = Token.load(pool.stakingToken)!;
-  let rewardToken = Token.load(pool.rewardToken)!;
-  let platform = Platform.load(ZERO_ADDRESS)!;
+  let vault = Vault.load(contract.owner().toHexString())!;
+  let stakingToken = Token.load(vault.inputToken)!;
+  let rewardToken = Token.load(vault.outputToken!)!;
+  let platform = YieldAggregator.load(ZERO_ADDRESS)!;
 
   // load user
-  let user = User.load(event.params.user.toHexString())!;
+  let user = Account.load(event.params.user.toHexString())!;
 
   // load position
-  let positionId = pool.id + '_' + user.id;
-  let position = Position.load(positionId)!;
+  let positionId = vault.id + '_' + user.id;
+  //let position = Position.load(positionId)!;
 
   // update current stakes
   // (for some reason this didn't work with a derived 'stakes' field)
-  let stakes = position.stakes;
+  //let stakes = platform.stakes;
 
   // note: should encapsulate this behind an interface when we have additional module types
-  let poolContract = PoolContract.bind(Address.fromString(pool.id));
-  if (pool.rewardModuleType == 'ERC20Competitive') {
+  //let poolContract = PoolContract.bind(Address.fromString(vault.id));
+
+  
+  
+  if (vault.rewardModuleType == 'ERC20Competitive') {
     // competitive
     let rewardContract = ERC20CompetitiveRewardModuleContract.bind(poolContract.rewardModule());
     let count = rewardContract.stakeCount(event.params.user).toI32();
@@ -370,7 +383,7 @@ export function handleClaimed(event: Claimed): void {
   transaction.gysrSpent = BIGDECIMAL_ZERO;
 
   // update pricing info
-  updatePool(pool, platform, stakingToken, rewardToken, event.block.timestamp);
+  updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
 
   // not considering claim amount in volume
 
@@ -378,15 +391,15 @@ export function handleClaimed(event: Claimed): void {
   let poolDayData = updatePoolDayData(pool, event.block.timestamp.toI32());
 
   // update platform pricing
-  if (pool.tvl.gt(PRICING_MIN_TVL) && !platform._activePools.includes(pool.id)) {
+  if (vault.tvl.gt(PRICING_MIN_TVL) && !platform._activePools.includes(pool.id)) {
     platform._activePools = platform._activePools.concat([pool.id]);
   }
-  updatePlatform(platform, event.block.timestamp, pool);
+  updatePlatform(platform, event.block.timestamp, vault);
 
   // store
   user.save();
   position.save();
-  pool.save();
+  vault.save();
   stakingToken.save();
   rewardToken.save();
   transaction.save();

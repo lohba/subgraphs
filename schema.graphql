@@ -42,7 +42,7 @@ type Token @entity {
   decimals: Int!
 
   " Optional field to track the price of a token, mostly for caching purposes "
-  lastPriceUSD: BigDecimal
+  lastPriceUSD: BigDecimal!
 
   " Optional field to track the block number of the last token price "
   lastPriceBlockNumber: BigInt
@@ -249,7 +249,7 @@ type UsageMetricsDailySnapshot @entity {
 }
 
 type UsageMetricsHourlySnapshot @entity {
-  " { # of hours since Unix epoch time } "
+  " { # of days since Unix epoch time }-{ HH: hour of the day } "
   id: ID!
 
   " Protocol this snapshot is associated with "
@@ -320,7 +320,7 @@ type FinancialsDailySnapshot @entity {
 ###############################
 
 type Vault @entity {
-  " Smart contract address of the vault "
+  " Smart contract address of the vault " 
   id: ID!
 
   " The protocol this vault belongs to "
@@ -340,7 +340,7 @@ type Vault @entity {
 
   " Aditional tokens that are given as reward for position in a protocol, usually in liquidity mining programs. e.g. SUSHI in the Onsen program, MATIC for Aave Polygon "
   rewardTokens: [RewardToken!]
-
+  
   " Some vaults have a deposit cap. This is in input token amount "
   depositLimit: BigInt!
 
