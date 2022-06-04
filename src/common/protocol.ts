@@ -1,5 +1,5 @@
 
-import { YieldAggregator } from "../../generated/schema";
+import { YieldAggregator } from "../generated/schema";
 import { Network, ProtocolType, PROTOCOL_ID } from "./constants";
 
 export function getOrCreateProtocol(): YieldAggregator {

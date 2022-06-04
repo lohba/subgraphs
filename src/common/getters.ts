@@ -6,7 +6,7 @@ import {
   FinancialsDailySnapshot,
   UsageMetricsHourlySnapshot,
   RewardToken,
-} from "../../generated/schema";
+} from "../generated/schema";
 import { fetchTokenSymbol, fetchTokenName, fetchTokenDecimals } from "./token";
 import {
   BIGDECIMAL_ZERO,
@@ -33,7 +33,7 @@ export function getOrCreateToken(tokenAddress: Address): Token {
     token = new Token(tokenAddress.toHexString());
     token.symbol = fetchTokenSymbol(tokenAddress);
     token.name = fetchTokenName(tokenAddress);
-    token.decimals = fetchTokenDecimals(tokenAddress);
+    token.decimals = BigInt.fromI32(fetchTokenDecimals(tokenAddress));
     token.lastPriceUSD = BIGDECIMAL_ZERO;
     token.lastPriceBlockNumber = BIGINT_ZERO;
     token.save();

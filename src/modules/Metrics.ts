@@ -10,7 +10,7 @@ import {
   } from "../common/initializer";
   import * as constants from "../common/constants";
   import { Address, ethereum } from "@graphprotocol/graph-ts";
-  import { ActiveAccount, Vault as VaultStore } from "../../generated/schema";
+  import { ActiveAccount, Vault as VaultStore } from "../generated/schema";
 
 
 export function updateVaultSnapshots(

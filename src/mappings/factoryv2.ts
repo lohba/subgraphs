@@ -1,12 +1,12 @@
 // GYSR factory event handling and mapping
 
 import { Address, BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
-import { GeyserCreated } from '../../generated/GeyserFactoryV1/GeyserFactoryV1'
-import { GeyserV1 as GeyserContractV1 } from '../../generated/GeyserFactoryV1/GeyserV1'
-import { GeyserV1 as GeyserTemplateV1 } from '../../generated/templates'
-import { Vault, Token } from '../../generated/schema'
-import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
-import { YieldAggregator, Vault as VaultStore } from "../../generated/schema";
+import { GeyserCreated } from '../generated/GeyserFactoryV1/GeyserFactoryV1'
+import { GeyserV1 as GeyserContractV1 } from '../generated/GeyserFactoryV1/GeyserV1'
+import { GeyserV1 as GeyserTemplateV1 } from '../generated/templates'
+import { Vault, Token } from '../generated/schema'
+import { Pool as VaultContract } from "../generated/PoolFactory/Pool";
+import { YieldAggregator, Vault as VaultStore } from "../generated/schema";
 import { BIGINT_ZERO, BIGDECIMAL_ZERO, ZERO_ADDRESS, PROTOCOL_ID, INT_ONE } from '../common/constants'
 import { getOrCreateToken, getOrCreateRewardToken } from '../common/getters'
 import {getOrCreateProtocol} from '../common/protocol'

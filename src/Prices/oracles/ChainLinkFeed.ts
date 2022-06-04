@@ -1,7 +1,7 @@
 import * as constants from "../common/constants";
 import { CustomPriceType } from "../common/types";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { ChainLinkContract } from "../../../generated/templates/Pool/ChainLinkContract";
+import { ChainLinkContract } from "../../generated/templates/Pool/ChainLinkContract";
 
 export function getChainLinkContract(network: string): ChainLinkContract {
   return ChainLinkContract.bind(

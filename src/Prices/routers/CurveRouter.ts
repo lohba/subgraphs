@@ -8,8 +8,8 @@ import {
   import * as constants from "../common/constants";
   import { CustomPriceType } from "../common/types";
   import { getPriceUsdc as getPriceUsdcSushi } from "./SushiSwapRouter";
-  import { CurveRegistry as CurveRegistryContract } from "../../../generated/GeyserFactoryV1/CurveRegistry";
-  import { CurvePoolRegistry as CurvePoolRegistryContract } from "../../../generated/GeyserFactoryV1/CurvePoolRegistry";
+  import { CurveRegistry as CurveRegistryContract } from "../../generated/GeyserFactoryV1/CurveRegistry";
+  import { CurvePoolRegistry as CurvePoolRegistryContract } from "../../generated/GeyserFactoryV1/CurvePoolRegistry";
   
   export function getCurvePriceUsdc(
     curveLpTokenAddress: Address,

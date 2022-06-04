@@ -1,8 +1,8 @@
 // V2 Pool event handling and mapping
 
 import { Address, BigInt, log, store } from '@graphprotocol/graph-ts'
-import { ControlTransferred, OwnershipTransferred } from '../../generated/PoolFactory/Pool'
-import { Vault, Account, YieldAggregator, UsageMetricsDailySnapshot } from '../../generated/schema'
+import { ControlTransferred, OwnershipTransferred } from '../generated/PoolFactory/Pool'
+import { Vault, Account, YieldAggregator, UsageMetricsDailySnapshot } from '../generated/schema'
 import { getOrCreateAccount } from '../common/initializer'
 import { ZERO_ADDRESS, INT_ONE, SECONDS_PER_DAY, SECONDS_PER_HOUR  } from '../common/constants'
 import { getOrCreateFinancialsDailySnapshot, getOrCreateUsageMetricDailySnapshot, getOrCreateUsageMetricHourlySnapshot } from "../common/getters";

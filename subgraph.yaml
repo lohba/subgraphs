@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,6 +8,7 @@ dataSources:
     source:
       address: "0xCAda3423d33259A94C1ED1A7AEEcb73B87D0B684"
       abi: GeyserFactoryV1
+      startBlock: 11143895
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -24,7 +25,7 @@ dataSources:
 ###########################################
 ############## Price Oracle ###############
 ###########################################
-# ERC20
+        # ERC20
         - name: _ERC20
           file: ./abis/Prices/ERC20.json
         # Curve Contracts
@@ -70,7 +71,7 @@ dataSources:
       startBlock: 12630427
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Vault
@@ -78,15 +79,15 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
         - name: Pool
-          file: './abis/Pool.json'
+          file: ./abis/Pool.json
         - name: ERC20StakingModule
-          file: './abis/ERC20StakingModule.json'
+          file: ./abis/ERC20StakingModule.json
         - name: ERC20BaseRewardModule
-          file: './abis/ERC20BaseRewardModule.json'
+          file: ./abis/ERC20BaseRewardModule.json
         - name: ERC20CompetitiveRewardModule
-          file: './abis/ERC20CompetitiveRewardModule.json'
+          file: ./abis/ERC20CompetitiveRewardModule.json
         - name: ERC20FriendlyRewardModule
-          file: './abis/ERC20FriendlyRewardModule.json'
+          file: ./abis/ERC20FriendlyRewardModule.json
 
         - name: ERC721
           file: ./abis/ERC721.json
@@ -138,7 +139,7 @@ templates:
       abi: GeyserV1
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Vault
@@ -147,11 +148,11 @@ templates:
         - name: GeyserV1
           file: ./abis/GeyserV1.json
         - name: Pool
-          file: './abis/Pool.json'
+          file: ./abis/Pool.json
         - name: ERC20StakingModule
-          file: './abis/ERC20StakingModule.json'
+          file: ./abis/ERC20StakingModule.json
         - name: ERC20BaseRewardModule
-          file: './abis/ERC20BaseRewardModule.json'
+          file: ./abis/ERC20BaseRewardModule.json
         - name: ERC721
           file: ./abis/ERC721.json
 ###########################################
@@ -213,7 +214,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Vault
@@ -224,7 +225,7 @@ templates:
         - name: ERC20StakingModule
           file: ./abis/ERC20StakingModule.json
         - name: ERC20BaseRewardModule
-          file: './abis/ERC20BaseRewardModule.json'
+          file: ./abis/ERC20BaseRewardModule.json
 
         - name: ERC721
           file: ./abis/ERC721.json
@@ -275,7 +276,7 @@ templates:
       abi: ERC20BaseRewardModule
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Vault
@@ -286,7 +287,7 @@ templates:
         - name: ERC20StakingModule
           file: ./abis/ERC20StakingModule.json
         - name: ERC20BaseRewardModule
-          file: './abis/ERC20BaseRewardModule.json'
+          file: ./abis/ERC20BaseRewardModule.json
         - name: GeyserV1
           file: ./abis/GeyserV1.json
 
@@ -345,7 +346,7 @@ templates:
       abi: ERC20StakingModule
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Vault
@@ -356,11 +357,11 @@ templates:
         - name: ERC20StakingModule
           file: ./abis/ERC20StakingModule.json
         - name: ERC20BaseRewardModule
-          file: './abis/ERC20BaseRewardModule.json'
+          file: ./abis/ERC20BaseRewardModule.json
         - name: ERC20CompetitiveRewardModule
-          file: './abis/ERC20CompetitiveRewardModule.json'
+          file: ./abis/ERC20CompetitiveRewardModule.json
         - name: ERC20FriendlyRewardModule
-          file: './abis/ERC20FriendlyRewardModule.json'
+          file: ./abis/ERC20FriendlyRewardModule.json
         - name: GeyserV1
           file: ./abis/GeyserV1.json
 

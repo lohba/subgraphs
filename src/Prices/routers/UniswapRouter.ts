@@ -4,9 +4,9 @@ import { CustomPriceType } from "../common/types";
 import {
   UniswapPair__getReservesResult,
   UniswapPair as UniswapPairContract,
-} from "../../../generated/GeyserFactoryV1/UniswapPair";
+} from "../../generated/GeyserFactoryV1/UniswapPair";
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { UniswapRouter as UniswapRouterContract } from "../../../generated/GeyserFactoryV1/UniswapRouter";
+import { UniswapRouter as UniswapRouterContract } from "../../generated/GeyserFactoryV1/UniswapRouter";
 
 export function isLpToken(tokenAddress: Address, network: string): bool {
   if (

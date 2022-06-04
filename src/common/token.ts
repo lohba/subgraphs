@@ -1,6 +1,6 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { ERC20 } from "../../generated/GeyserFactoryV1/ERC20";
-import { RewardToken, Token } from "../../generated/schema";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { _ERC20 as ERC20 } from "../generated/GeyserFactoryV1/_ERC20";
+import { RewardToken, Token } from "../generated/schema";
 import { DEFAULT_DECIMALS, RewardTokenType } from "./constants";
 import { readValue } from "../utils/contracts";
 
@@ -16,7 +16,7 @@ export function getOrCreateToken(id: Address): Token {
   let erc20Contract = ERC20.bind(id);
   token.name = readValue<string>(erc20Contract.try_name(), "");
   token.symbol = readValue<string>(erc20Contract.try_symbol(), "");
-  token.decimals = readValue<i32>(erc20Contract.try_decimals(), DEFAULT_DECIMALS);
+  token.decimals = readValue<BigInt>(erc20Contract.try_decimals(), BigInt.fromString(DEFAULT_DECIMALS.toString()));
   token.save();
 
   return token as Token;
@@ -65,5 +65,5 @@ export function fetchTokenDecimals(tokenAddress: Address): i32 {
   if (decimals.reverted) {
     return 18;
   }
-  return decimals.value;
+  return decimals.value.toI32();
 }

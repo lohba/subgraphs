@@ -1,7 +1,7 @@
 // pricing for pool information on apr, tvl, and more
 
 import { Address, BigInt, BigDecimal, log, store } from '@graphprotocol/graph-ts'
-import { Vault, YieldAggregator, Token, Deposit } from '../../generated/schema'
+import { Vault, YieldAggregator, Token, Deposit } from '../generated/schema'
 import { integerToDecimal } from '../common/getters'
 import { INITIAL_SHARES_PER_TOKEN, BIGDECIMAL_ZERO } from '../common/constants';
 import {getOrCreateToken} from '../common/getters'

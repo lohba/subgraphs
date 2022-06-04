@@ -1,10 +1,10 @@
 // utilities for Pool updates and pricing
 
 import { Address, BigInt, log, store } from '@graphprotocol/graph-ts'
-import { Pool as PoolContract } from '../../generated/templates/Pool/Pool'
-import { ERC20StakingModule as ERC20StakingModuleContract } from '../../generated/templates/Pool/ERC20StakingModule'
-import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../../generated/templates/Pool/ERC20BaseRewardModule'
-import { Vault, Token, YieldAggregator } from '../../generated/schema'
+import { Pool as PoolContract } from '../generated/templates/Pool/Pool'
+import { ERC20StakingModule as ERC20StakingModuleContract } from '../generated/templates/Pool/ERC20StakingModule'
+import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../generated/templates/Pool/ERC20BaseRewardModule'
+import { Vault, Token, YieldAggregator } from '../generated/schema'
 import { integerToDecimal } from '../common/getters'
 //import { ZERO_BIG_INT, INITIAL_SHARES_PER_TOKEN, ZERO_BIG_DECIMAL, ONE_E_18 } from '../util/constants'
 //import { getPrice } from '../Prices/token'

@@ -1,6 +1,6 @@
 import * as constants from "./constants";
-import { VaultFee, Vault as VaultStore } from "../../generated/schema";
-import { ERC20 as ERC20Contract } from "../../generated/PoolFactory/ERC20";
+import { VaultFee, Vault as VaultStore } from "../generated/schema";
+import { _ERC20 as ERC20Contract } from "../generated/PoolFactory/_ERC20";
 import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 export function getTimestampInMillis(block: ethereum.Block): BigInt {

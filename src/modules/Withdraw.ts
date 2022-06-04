@@ -2,7 +2,7 @@ import {
     Token,
     Vault as VaultStore,
     Withdraw as WithdrawTransaction,
-  } from "../../generated/schema";
+  } from "../generated/schema";
   import {
     log,
     BigInt,
@@ -20,7 +20,7 @@ import {
   import { getUsdPricePerToken } from "../Prices";
   import * as constants from "../common/constants";
   import { getPriceOfOutputTokens } from "./Price";
-  import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
+  import { Pool as VaultContract } from "../generated/PoolFactory/Pool";
   
   export function createWithdrawTransaction(
     to: Address,
@@ -60,116 +60,116 @@ import {
     return withdrawTransaction;
   }
   
-  export function _Withdraw(
-    to: Address,
-    transaction: ethereum.Transaction,
-    block: ethereum.Block,
-    vault: VaultStore,
-    sharesBurnt: BigInt
-  ): void {
-    const protocol = getOrCreateYieldAggregator();
-    const vaultAddress = Address.fromString(vault.id);
-    const vaultContract = VaultContract.bind(vaultAddress);
+  // export function _Withdraw(
+  //   to: Address,
+  //   transaction: ethereum.Transaction,
+  //   block: ethereum.Block,
+  //   vault: VaultStore,
+  //   sharesBurnt: BigInt
+  // ): void {
+  //   const protocol = getOrCreateYieldAggregator();
+  //   const vaultAddress = Address.fromString(vault.id);
+  //   const vaultContract = VaultContract.bind(vaultAddress);
   
-    //const strategyAddress = Address.fromString(vault._strategy);
-    //const strategyContract = StrategyContract.bind(strategyAddress);
+  //   //const strategyAddress = Address.fromString(vault._strategy);
+  //   //const strategyContract = StrategyContract.bind(strategyAddress);
   
-    // calculate withdraw amount as per the withdraw function in vault
-    // contract address
-    let withdrawAmount = vault.inputTokenBalance
-      .times(sharesBurnt)
-      .div(vault.outputTokenSupply!);
+  //   // calculate withdraw amount as per the withdraw function in vault
+  //   // contract address
+  //   let withdrawAmount = vault.inputTokenBalance
+  //     .times(sharesBurnt)
+  //     .div(vault.outputTokenSupply!);
   
-    let inputToken = Token.load(vault.inputToken);
-    let inputTokenAddress = Address.fromString(vault.inputToken);
-    let inputTokenPrice = getUsdPricePerToken(inputTokenAddress);
-    let inputTokenDecimals = constants.BIGINT_TEN.pow(
-      inputToken!.decimals as u8
-    ).toBigDecimal();
+  //   let inputToken = Token.load(vault.inputToken);
+  //   let inputTokenAddress = Address.fromString(vault.inputToken);
+  //   let inputTokenPrice = getUsdPricePerToken(inputTokenAddress);
+  //   let inputTokenDecimals = constants.BIGINT_TEN.pow(
+  //     inputToken!.decimals as u8
+  //   ).toBigDecimal();
   
-    vault.inputTokenBalance = vault.inputTokenBalance.minus(withdrawAmount);
-    vault.outputTokenSupply = vault.outputTokenSupply!.minus(sharesBurnt);
+  //   vault.inputTokenBalance = vault.inputTokenBalance.minus(withdrawAmount);
+  //   vault.outputTokenSupply = vault.outputTokenSupply!.minus(sharesBurnt);
   
-    // const withdrawalFees = utils
-    //   .readValue<BigInt>(
-    //     strategyContract.try_withdrawalFee(),
-    //     constants.BIGINT_ZERO
-    //   )
-    //   .toBigDecimal()
-    //   .div(constants.DENOMINATOR);
+  //   // const withdrawalFees = utils
+  //   //   .readValue<BigInt>(
+  //   //     strategyContract.try_withdrawalFee(),
+  //   //     constants.BIGINT_ZERO
+  //   //   )
+  //   //   .toBigDecimal()
+  //   //   .div(constants.DENOMINATOR);
   
-    const protocolSideWithdrawalAmount = withdrawAmount
-      .toBigDecimal()
-      .div(inputTokenDecimals);
+  //   const protocolSideWithdrawalAmount = withdrawAmount
+  //     .toBigDecimal()
+  //     .div(inputTokenDecimals);
   
-    const supplySideWithdrawalAmount = withdrawAmount
-      .toBigDecimal()
-      .div(inputTokenDecimals)
-      .minus(protocolSideWithdrawalAmount);
+  //   const supplySideWithdrawalAmount = withdrawAmount
+  //     .toBigDecimal()
+  //     .div(inputTokenDecimals)
+  //     .minus(protocolSideWithdrawalAmount);
   
-    let withdrawAmountUSD = supplySideWithdrawalAmount
-      .times(inputTokenPrice.usdPrice)
-      .div(inputTokenPrice.decimalsBaseTen);
+  //   let withdrawAmountUSD = supplySideWithdrawalAmount
+  //     .times(inputTokenPrice.usdPrice)
+  //     .div(inputTokenPrice.decimalsBaseTen);
   
-    vault.totalValueLockedUSD = vault.totalValueLockedUSD.minus(
-      withdrawAmountUSD
-    );
-    protocol.totalValueLockedUSD = protocol.totalValueLockedUSD.minus(
-      withdrawAmountUSD
-    );
+  //   vault.totalValueLockedUSD = vault.totalValueLockedUSD.minus(
+  //     withdrawAmountUSD
+  //   );
+  //   protocol.totalValueLockedUSD = protocol.totalValueLockedUSD.minus(
+  //     withdrawAmountUSD
+  //   );
   
-    vault.outputTokenPriceUSD = getPriceOfOutputTokens(
-      vaultAddress,
-      inputTokenAddress,
-      inputTokenDecimals
-    );
+  //   vault.outputTokenPriceUSD = getPriceOfOutputTokens(
+  //     vaultAddress,
+  //     inputTokenAddress,
+  //     inputTokenDecimals
+  //   );
   
-    // vault.pricePerShare = utils
-    //   .readValue<BigInt>(
-    //     vaultContract.try_getPricePerFullShare(),
-    //     constants.BIGINT_ZERO
-    //   )
-    //   .toBigDecimal();
+  //   // vault.pricePerShare = utils
+  //   //   .readValue<BigInt>(
+  //   //     vaultContract.try_getPricePerFullShare(),
+  //   //     constants.BIGINT_ZERO
+  //   //   )
+  //   //   .toBigDecimal();
   
-    const protocolSideWithdrawalAmountUSD = protocolSideWithdrawalAmount
-      .times(inputTokenPrice.usdPrice)
-      .div(inputTokenPrice.decimalsBaseTen);
+  //   const protocolSideWithdrawalAmountUSD = protocolSideWithdrawalAmount
+  //     .times(inputTokenPrice.usdPrice)
+  //     .div(inputTokenPrice.decimalsBaseTen);
   
-    // Update hourly and daily withdraw transaction count
-    const metricsDailySnapshot = getOrCreateUsageMetricsDailySnapshot(block);
-    const metricsHourlySnapshot = getOrCreateUsageMetricsHourlySnapshot(block);
+  //   // Update hourly and daily withdraw transaction count
+  //   const metricsDailySnapshot = getOrCreateUsageMetricsDailySnapshot(block);
+  //   const metricsHourlySnapshot = getOrCreateUsageMetricsHourlySnapshot(block);
   
-    metricsDailySnapshot.dailyWithdrawCount += 1;
-    metricsHourlySnapshot.hourlyWithdrawCount += 1;
+  //   metricsDailySnapshot.dailyWithdrawCount += 1;
+  //   metricsHourlySnapshot.hourlyWithdrawCount += 1;
   
-    metricsDailySnapshot.save();
-    metricsHourlySnapshot.save();
-    protocol.save();
-    vault.save();
+  //   metricsDailySnapshot.save();
+  //   metricsHourlySnapshot.save();
+  //   protocol.save();
+  //   vault.save();
   
-    createWithdrawTransaction(
-      to,
-      vaultAddress,
-      transaction,
-      block,
-      vault.inputToken,
-      withdrawAmount,
-      withdrawAmountUSD
-    );
+  //   createWithdrawTransaction(
+  //     to,
+  //     vaultAddress,
+  //     transaction,
+  //     block,
+  //     vault.inputToken,
+  //     withdrawAmount,
+  //     withdrawAmountUSD
+  //   );
   
-    updateFinancialsAfterWithdrawal(block, protocolSideWithdrawalAmountUSD);
+  //   updateFinancialsAfterWithdrawal(block, protocolSideWithdrawalAmountUSD);
   
-    log.info(
-      "[Withdrawn] TxHash: {}, vaultAddress: {}, sharesBurnt: {}, supplySideWithdrawAmount: {}, protocolSideWithdrawAmount: {}",
-      [
-        transaction.hash.toHexString(),
-        vault.id,
-        sharesBurnt.toString(),
-        supplySideWithdrawalAmount.toString(),
-        protocolSideWithdrawalAmount.toString()
-      ]
-    );
-  }
+  //   log.info(
+  //     "[Withdrawn] TxHash: {}, vaultAddress: {}, sharesBurnt: {}, supplySideWithdrawAmount: {}, protocolSideWithdrawAmount: {}",
+  //     [
+  //       transaction.hash.toHexString(),
+  //       vault.id,
+  //       sharesBurnt.toString(),
+  //       supplySideWithdrawalAmount.toString(),
+  //       protocolSideWithdrawalAmount.toString()
+  //     ]
+  //   );
+  // }
   
   export function updateFinancialsAfterWithdrawal(
     block: ethereum.Block,

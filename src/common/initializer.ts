@@ -9,14 +9,14 @@ import {
   UsageMetricsHourlySnapshot,
   Vault,
   RewardToken
-} from "../../generated/schema";
+} from "../generated/schema";
 import * as utils from "./utils";
 import * as constants from "./constants";
 // import { enumToPrefix } from "./strings";
-import { ActiveAccount, Vault as VaultStore } from "../../generated/schema";
+import { ActiveAccount, Vault as VaultStore } from "../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
-import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
-import { _ERC20 as ERC20Contract } from "../../generated/PoolFactory/_ERC20";
+import { Pool as VaultContract } from "../generated/PoolFactory/Pool";
+import { _ERC20 as ERC20Contract } from "../generated/PoolFactory/_ERC20";
 
 
 export function getOrCreateAccount(id: string): Account {

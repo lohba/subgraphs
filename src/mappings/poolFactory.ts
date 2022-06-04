@@ -1,22 +1,22 @@
 // V2 Pool Factory event handling and mapping
 
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
-import { PoolCreated } from '../../generated/PoolFactory/PoolFactory'
-import { Pool as PoolContract } from '../../generated/PoolFactory/Pool'
-import { ERC20StakingModule as ERC20StakingModuleContract } from '../../generated/PoolFactory/ERC20StakingModule'
-import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../../generated/PoolFactory/ERC20BaseRewardModule'
-import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../../generated/PoolFactory/ERC20CompetitiveRewardModule'
-import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../../generated/PoolFactory/ERC20FriendlyRewardModule'
-import { Vault, YieldAggregator, Token, Account } from '../../generated/schema'
-import { Vault as VaultStore } from '../../generated/schema'
-import { Pool as VaultContract } from "../../generated/PoolFactory/Pool";
+import { PoolCreated } from '../generated/PoolFactory/PoolFactory'
+import { Pool as PoolContract } from '../generated/PoolFactory/Pool'
+import { ERC20StakingModule as ERC20StakingModuleContract } from '../generated/PoolFactory/ERC20StakingModule'
+import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../generated/PoolFactory/ERC20BaseRewardModule'
+import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../generated/PoolFactory/ERC20CompetitiveRewardModule'
+import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../generated/PoolFactory/ERC20FriendlyRewardModule'
+import { Vault, YieldAggregator, Token, Account } from '../generated/schema'
+import { Vault as VaultStore } from '../generated/schema'
+import { Pool as VaultContract } from "../generated/PoolFactory/Pool";
 
 
 import {
   Pool as PoolTemplate,
   ERC20BaseRewardModule as ERC20BaseRewardModuleTemplate,
   ERC20StakingModule as ERC20StakingModuleTemplate
-} from '../../generated/templates'
+} from '../generated/templates'
 import {
   BIGINT_ZERO,
   BIGDECIMAL_ZERO,
