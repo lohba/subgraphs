@@ -1,13 +1,10 @@
 // V2 Pool Factory event handling and mapping
 
-import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
+import { Address } from '@graphprotocol/graph-ts'
 import { PoolCreated } from '../generated/PoolFactory/PoolFactory'
 import { Pool as PoolContract } from '../generated/PoolFactory/Pool'
 import { ERC20StakingModule as ERC20StakingModuleContract } from '../generated/PoolFactory/ERC20StakingModule'
 import { ERC20BaseRewardModule as ERC20BaseRewardModuleContract } from '../generated/PoolFactory/ERC20BaseRewardModule'
-import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../generated/PoolFactory/ERC20CompetitiveRewardModule'
-import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../generated/PoolFactory/ERC20FriendlyRewardModule'
-import { Vault, YieldAggregator, Token, Account } from '../generated/schema'
 import { Vault as VaultStore } from '../generated/schema'
 import { Pool as VaultContract } from "../generated/PoolFactory/Pool";
 
@@ -20,13 +17,7 @@ import {
 import {
   BIGINT_ZERO,
   BIGDECIMAL_ZERO,
-  INITIAL_SHARES_PER_TOKEN,
-  ZERO_ADDRESS,
   PROTOCOL_ID,
-  ERC20_COMPETITIVE_REWARD_MODULE_FACTORIES,
-  ERC20_FRIENDLY_REWARD_MODULE_FACTORIES,
-  ERC20_STAKING_MODULE_FACTORIES,
-  ERC721_STAKING_MODULE_FACTORIES
 } from '../common/constants'
 import { getOrCreateToken, getOrCreateReward } from '../common/token'
 import {getOrCreateProtocol} from '../common/protocol'
@@ -58,8 +49,8 @@ export function handlePoolCreated(event: PoolCreated): void {
 
   // pool entity
   const vault = new VaultStore(event.params.pool.toHexString());
-  const vaultContract = VaultContract.bind(Address.fromString(vault.id));
-  vault.protocol = PROTOCOL_ID
+  // const vaultContract = VaultContract.bind(Address.fromString(vault.id));
+  vault.protocol = PROTOCOL_ID;
 
   vault.name = stakingToken.name;
   vault.symbol = stakingToken.symbol;
@@ -72,6 +63,16 @@ export function handlePoolCreated(event: PoolCreated): void {
   vault.totalValueLockedUSD = BIGDECIMAL_ZERO;
   vault.createdBlockNumber = event.block.number;
   vault.createdTimestamp = event.block.timestamp;
+  // added
+  vault.depositLimit = BIGINT_ZERO;
+  vault.outputTokenPriceUSD = BIGDECIMAL_ZERO;
+  vault.pricePerShare = BIGDECIMAL_ZERO;
+  vault.stakedOutputTokenAmount = BIGINT_ZERO;
+  vault.rewardTokenEmissionsAmount = [BIGINT_ZERO, BIGINT_ZERO];
+  vault.rewardTokenEmissionsUSD = [BIGDECIMAL_ZERO, BIGDECIMAL_ZERO];
+  // vault.fees = createPoolFees(poolAddress.toHexString());
+  vault.createdTimestamp = event.block.timestamp;
+  vault.createdBlockNumber = event.block.number;
   // reward token
   vault.rewardTokens = [rewardToken.id];
   vault.fees = [];

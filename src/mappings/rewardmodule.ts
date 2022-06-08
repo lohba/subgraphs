@@ -17,13 +17,14 @@ import { updatePoolDayData } from '../common/initializer'
 import { readValue } from "../utils/contracts";
 import {getUsdPricePerToken} from "../Prices/index"
 
+
 export function handleRewardsFunded(event: RewardsFunded): void {
   let contract = ERC20BaseRewardModuleContract.bind(event.address);
 
   let vault = Vault.load(contract.owner().toHexString())!;
-  if (vault == null) {
-    vault = new Vault(contract.owner().toHexString());
-  }
+  // if (vault == null) {
+  //   vault = new Vault(contract.owner().toHexString());
+  // }
   let stakingToken = Token.load(vault.inputToken)!;
   let rewardToken = Token.load(vault.outputToken)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;
@@ -55,9 +56,9 @@ export function handleRewardsFunded(event: RewardsFunded): void {
 export function handleGysrSpent(event: GysrSpent): void {
   let contract = ERC20BaseRewardModuleContract.bind(event.address);
   let vault = Vault.load(contract.owner().toHexString())!;
-  if (vault == null) {
-    vault = new Vault(contract.owner().toHexString());
-  }
+  // if (vault == null) {
+  //   vault = new Vault(contract.owner().toHexString());
+  // }
   let stakingToken = Token.load(vault.inputToken)!;
   let rewardToken = Token.load(vault.outputToken)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;

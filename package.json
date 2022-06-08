@@ -4,10 +4,12 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/generated/",
     "build": "graph build",
+    "auth": "graph auth",
+    "deploy-studio": "graph deploy --studio gysr",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ gysr",
     "create-local": "graph create --node http://localhost:8020/ gysr",
     "remove-local": "graph remove --node http://localhost:8020/ gysr",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gysr"
+    "deploy-local": "graph deploy gysr --node http://127.0.0.1:8020/ --ipfs http://127.0.0.1:5001"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.29.2",

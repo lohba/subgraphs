@@ -6,27 +6,22 @@ import {
   Unstaked,
   Claimed
 } from '../generated/templates/ERC20StakingModule/ERC20StakingModule'
-import { ERC20CompetitiveRewardModule as ERC20CompetitiveRewardModuleContract } from '../generated/templates/ERC20StakingModule/ERC20CompetitiveRewardModule'
-import { ERC20FriendlyRewardModule as ERC20FriendlyRewardModuleContract } from '../generated/templates/ERC20StakingModule/ERC20FriendlyRewardModule'
 import { Vault, Token, RewardToken, Account, YieldAggregator, Deposit, Withdraw } from '../generated/schema'
 import { getOrCreateAccount, updatePoolDayData } from '../common/initializer'
-import {getOrCreateProtocol} from '../common/protocol'
-import { BIGINT_ZERO,BIGDECIMAL_ZERO, ZERO_ADDRESS, INT_ONE } from '../common/constants'
+import { getOrCreateProtocol } from '../common/protocol'
+import { BIGINT_ZERO, BIGDECIMAL_ZERO, ZERO_ADDRESS, INT_ONE } from '../common/constants'
 import { updatePool } from '../utils/pool'
-//import { _Deposit } from '../modules/Deposit'
-//import { _Withdraw } from '../modules/Withdraw'
 import { updateFinancials, updateUsageMetrics, updateVaultSnapshots } from "../modules/Metrics";
-import { getUsdPricePerToken } from "../Prices/index"
 import { integerToDecimal } from '../common/getters'
-
+import { getUsdPricePerToken } from "../Prices/index"
 
 export function handleStaked(event: Staked): void {
   // load pool and tokens
   let contract = ERC20StakingModuleContract.bind(event.address);
   let vault = Vault.load(contract.owner().toHexString())!;
-  if (vault == null) {
-    vault = new Vault(contract.owner().toHexString());
-  }
+  // if (vault == null) {
+  //   vault = new Vault(contract.owner().toHexString());
+  // }
   let stakingToken = Token.load(vault.inputToken)!;
   let rewardToken = Token.load(vault.outputToken)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;
@@ -56,9 +51,9 @@ export function handleUnstaked(event: Unstaked): void {
   // load pool and token
   let contract = ERC20StakingModuleContract.bind(event.address);
   let vault = Vault.load(contract.owner().toHexString())!;
-  if (vault == null) {
-    vault = new Vault(contract.owner().toHexString());
-  }
+  // if (vault == null) {
+  //   vault = new Vault(contract.owner().toHexString());
+  // }
   let stakingToken = Token.load(vault.inputToken)!;
   let rewardToken = Token.load(vault.outputToken)!;
   let platform = YieldAggregator.load(ZERO_ADDRESS)!;
