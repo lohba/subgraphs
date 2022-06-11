@@ -24,16 +24,19 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 
 export function handleControlTransferred(event: ControlTransferred): void {
   let vault = Vault.load(event.address.toHexString())!;
-  let platform = YieldAggregator.load(ZERO_ADDRESS)!;
+  let platform = YieldAggregator.load(ZERO_ADDRESS);
 
-  let newOwner = Account.load(event.params.newController.toHexString());
-  if (newOwner == null) {
-    newOwner = getOrCreateAccount(event.params.newController.toHexString());
-    newOwner.save()
-    platform.cumulativeUniqueUsers = platform.cumulativeUniqueUsers += INT_ONE;
+  if (platform){
+    let newOwner = Account.load(event.params.newController.toHexString());
+    if (newOwner == null) {
+      newOwner = getOrCreateAccount(event.params.newController.toHexString());
+      newOwner.save()
+      platform.cumulativeUniqueUsers = platform.cumulativeUniqueUsers += INT_ONE;
+    }
+
+    //vault.owner = newOwner
+    //vault.save()
+    platform.save();
   }
-
-  //vault.owner = newOwner
-  //vault.save()
-  platform.save();
+  
 }

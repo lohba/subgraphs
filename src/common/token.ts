@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { _ERC20 as ERC20 } from "../generated/GeyserFactoryV1/_ERC20";
 import { RewardToken, Token } from "../generated/schema";
 import { DEFAULT_DECIMALS, RewardTokenType } from "./constants";
@@ -17,6 +17,8 @@ export function getOrCreateToken(id: Address): Token {
   token.name = readValue<string>(erc20Contract.try_name(), "");
   token.symbol = readValue<string>(erc20Contract.try_symbol(), "");
   token.decimals = readValue<BigInt>(erc20Contract.try_decimals(), BigInt.fromString(DEFAULT_DECIMALS.toString()));
+  token.lastPriceUSD = BigDecimal.fromString(DEFAULT_DECIMALS.toString());
+  token.lastPriceBlockNumber = BigInt.fromString(DEFAULT_DECIMALS.toString());
   token.save();
 
   return token as Token;

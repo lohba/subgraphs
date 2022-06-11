@@ -64,8 +64,6 @@ export function getOrCreateToken(address: Address): Token {
     token.symbol = utils.readValue<string>(contract.try_symbol(), "");
     token.decimals = utils
       .readValue<BigInt>(contract.try_decimals(), constants.BIGINT_ZERO)
-      .toI32() as u8;
-
     token.save();
   }
 

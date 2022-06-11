@@ -1,6 +1,6 @@
 // V2 Pool Factory event handling and mapping
 
-import { Address } from '@graphprotocol/graph-ts'
+import { Address, log } from '@graphprotocol/graph-ts'
 import { PoolCreated } from '../generated/PoolFactory/PoolFactory'
 import { Pool as PoolContract } from '../generated/PoolFactory/Pool'
 import { ERC20StakingModule as ERC20StakingModuleContract } from '../generated/PoolFactory/ERC20StakingModule'
@@ -77,9 +77,11 @@ export function handlePoolCreated(event: PoolCreated): void {
   vault.rewardTokens = [rewardToken.id];
   vault.fees = [];
   vault.save();
-
-  protocol.vaults.push(vault.id);
-
+  
+  if (protocol.get('vaults')){
+    protocol.vaults.push(vault.id);
+  }
+  
   vault.save();
   user.save();
   protocol.save();

@@ -25,31 +25,34 @@ export function handleRewardsFunded(event: RewardsFunded): void {
   // if (vault == null) {
   //   vault = new Vault(contract.owner().toHexString());
   // }
-  let stakingToken = Token.load(vault.inputToken)!;
-  let rewardToken = Token.load(vault.outputToken)!;
-  let platform = YieldAggregator.load(ZERO_ADDRESS)!;
-  let amount = integerToDecimal(event.params.amount, stakingToken.decimals)
+  let stakingToken = Token.load(vault.inputToken);
+  let rewardToken = Token.load(vault.outputToken);
+  let platform = YieldAggregator.load(ZERO_ADDRESS);
+  if (stakingToken && rewardToken && platform){
+    let amount = integerToDecimal(event.params.amount, stakingToken.decimals)
 
-  let stakingTokenPrice = getUsdPricePerToken(Address.fromString(stakingToken.id));
-  stakingToken.lastPriceUSD = stakingTokenPrice.usdPrice;
-  stakingToken.lastPriceBlockNumber = event.block.number;
-  stakingToken.save();
-
-  vault.totalValueLockedUSD = stakingToken.lastPriceUSD.times(
-    vault.inputTokenBalance.toBigDecimal().div(stakingToken.decimals.toBigDecimal()),
-  );
-  vault.outputTokenPriceUSD = getUsdPricePerToken(Address.fromString(stakingToken.id)).usdPrice;
-  vault.save();
-
-  // update pool pricing
-  updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
-
-  // store
-  stakingToken.save();
-  rewardToken.save();
-  // platform.save();
-
-  log.info('rewards funded {} {} {} {}', [vault.id, rewardToken.symbol, amount.toString()]);
+    let stakingTokenPrice = getUsdPricePerToken(Address.fromString(stakingToken.id));
+    stakingToken.lastPriceUSD = stakingTokenPrice.usdPrice;
+    stakingToken.lastPriceBlockNumber = event.block.number;
+    stakingToken.save();
+  
+    vault.totalValueLockedUSD = stakingToken.lastPriceUSD.times(
+      vault.inputTokenBalance.toBigDecimal().div(stakingToken.decimals.toBigDecimal()),
+    );
+    vault.outputTokenPriceUSD = getUsdPricePerToken(Address.fromString(stakingToken.id)).usdPrice;
+    vault.save();
+  
+    // update pool pricing
+    updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
+  
+    // store
+    stakingToken.save();
+    rewardToken.save();
+    // platform.save();
+  
+    log.info('rewards funded {} {} {} {}', [vault.id, rewardToken.symbol, amount.toString()]);
+  }
+  
 }
 
 
@@ -59,31 +62,34 @@ export function handleGysrSpent(event: GysrSpent): void {
   // if (vault == null) {
   //   vault = new Vault(contract.owner().toHexString());
   // }
-  let stakingToken = Token.load(vault.inputToken)!;
-  let rewardToken = Token.load(vault.outputToken)!;
-  let platform = YieldAggregator.load(ZERO_ADDRESS)!;
-  let amount = integerToDecimal(event.params.amount, rewardToken.decimals)
+  let stakingToken = Token.load(vault.inputToken);
+  let rewardToken = Token.load(vault.outputToken);
+  let platform = YieldAggregator.load(ZERO_ADDRESS);
+  if (stakingToken && rewardToken && platform){
+    let amount = integerToDecimal(event.params.amount, rewardToken.decimals)
 
-  let stakingTokenPrice = getUsdPricePerToken(Address.fromString(stakingToken.id));
-  stakingToken.lastPriceUSD = stakingTokenPrice.usdPrice;
-  stakingToken.lastPriceBlockNumber = event.block.number;
-  stakingToken.save();
-
-  vault.totalValueLockedUSD = stakingToken.lastPriceUSD.times(
-    vault.inputTokenBalance.toBigDecimal().div(stakingToken.decimals.toBigDecimal()),
-  );
-  vault.outputTokenPriceUSD = getUsdPricePerToken(Address.fromString(stakingToken.id)).usdPrice;
-  vault.save();
-
-  // update pool pricing
-  updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
-
-  // store
-  stakingToken.save();
-  rewardToken.save();
-  // platform.save();
-
-  log.info('rewards funded {} {} {} {}', [vault.id, rewardToken.symbol, amount.toString()]);
+    let stakingTokenPrice = getUsdPricePerToken(Address.fromString(stakingToken.id));
+    stakingToken.lastPriceUSD = stakingTokenPrice.usdPrice;
+    stakingToken.lastPriceBlockNumber = event.block.number;
+    stakingToken.save();
+  
+    vault.totalValueLockedUSD = stakingToken.lastPriceUSD.times(
+      vault.inputTokenBalance.toBigDecimal().div(stakingToken.decimals.toBigDecimal()),
+    );
+    vault.outputTokenPriceUSD = getUsdPricePerToken(Address.fromString(stakingToken.id)).usdPrice;
+    vault.save();
+  
+    // update pool pricing
+    updatePool(vault, platform, stakingToken, rewardToken, event.block.timestamp);
+  
+    // store
+    stakingToken.save();
+    rewardToken.save();
+    // platform.save();
+  
+    log.info('rewards funded {} {} {} {}', [vault.id, rewardToken.symbol, amount.toString()]);
+  }
+  
 }
 
 
